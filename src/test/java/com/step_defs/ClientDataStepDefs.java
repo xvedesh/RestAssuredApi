@@ -1,13 +1,14 @@
 package com.step_defs;
 
 import com.api.APIMap;
+import com.api.BaseTest;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 
 public class ClientDataStepDefs {
     @Given("I send POST request to get Authorization Token")
     public void i_send_post_request_to_get_authorization_token() {
-
+        BaseTest.generateToken();
     }
 
     @Then("I send POST request to create new {string} data")

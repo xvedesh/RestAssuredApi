@@ -15,4 +15,3 @@ Feature: As a User I should be able to retrieve clients data sending HTTP reques
       | account     |
       | portfolio   |
       | transaction |
-
