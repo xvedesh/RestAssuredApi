@@ -1,18 +1,18 @@
 package com.api;
 
 import com.fasterxml.jackson.databind.util.JSONPObject;
+import org.json.*;
 import com.github.javafaker.Faker;
 import com.interfaces.PayLoadValidator;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 import static io.restassured.RestAssured.given;
 
 public class ClientAPI extends BaseTest implements PayLoadValidator {
     static Faker faker = new Faker();
+
     @Override
     public void post(String s) {
         given()
@@ -21,7 +21,7 @@ public class ClientAPI extends BaseTest implements PayLoadValidator {
                 .headers(returnAuthHeaders())
                 .body(returnBody())
                 .when()
-                .post(baseURI + clientEndPoint)
+                .post(baseURI + allClientsEndPoint)
                 .prettyPeek()
                 .path("accessToken");
     }
@@ -33,7 +33,17 @@ public class ClientAPI extends BaseTest implements PayLoadValidator {
 
     @Override
     public void put(String s) {
-
+        given()
+                .log()
+                .all()
+                .headers(returnAuthHeaders())
+                .pathParam("clientId", "1")
+                //ToDo: Make client id dynamic and corresponding to client Id that was in POST request before it
+                .body(returnBody())
+                .when()
+                .put(baseURI + allClientsEndPoint + clientEndPoint)
+                .prettyPeek()
+                .path("accessToken");
     }
 
     @Override
@@ -42,12 +52,12 @@ public class ClientAPI extends BaseTest implements PayLoadValidator {
     }
 
     @Override
-    public JSONPObject get(String s) {
+    public JSONObject get(String s) {
         return null;
     }
 
     @Override
-    public void validatePayload(JSONPObject payload) {
+    public void validatePayload(JSONObject payload) {
 
     }
 
@@ -57,18 +67,22 @@ public class ClientAPI extends BaseTest implements PayLoadValidator {
     }
 
     private static Map<String, Object> returnBody() {
+
         Map<String, Object> map = new LinkedHashMap<>();
         Map<String, Object> address = new LinkedHashMap<>();
+
+        address.put("street", faker.address().streetAddress());
+        address.put("city", faker.address().cityName());
+        address.put("state", faker.address().stateAbbr());
+        address.put("zipCode", faker.numerify("#####"));
+
         map.put("id", faker.number().randomDigitNotZero());
         map.put("firstName", faker.name().firstName());
         map.put("lastName", faker.name().lastName());
         map.put("email", faker.internet().emailAddress());
         map.put("phone", faker.numerify("###-###-####"));
-        address.put("street", faker.address().streetAddress());
-        address.put("city", faker.address().cityName());
-        address.put("state", faker.address().stateAbbr());
-        address.put("zipCode", faker.numerify("#####"));
         map.put("address", address);
+
         return map;
-        }
+    }
 }

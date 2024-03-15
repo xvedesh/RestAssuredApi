@@ -14,6 +14,7 @@ public class BaseTest {
     public static final String baseURI = ConfigurationReader.getProperty("baseURI");
     private static final String authEndPoint = ConfigurationReader.getProperty("authEndPoint");
     public static final String clientEndPoint = ConfigurationReader.getProperty("clientEndPoint");
+    public static final String allClientsEndPoint = ConfigurationReader.getProperty("allClientsEndPoint");
     public static final String accountsEndPoint = ConfigurationReader.getProperty("accountEndPoint");
     public static final String transactionsEndPoint = ConfigurationReader.getProperty("transactionEndPoint");
     public static final String portfolioEndPoint = ConfigurationReader.getProperty("portfolioEndPoint");

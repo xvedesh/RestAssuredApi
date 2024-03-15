@@ -2,6 +2,7 @@ package com.api;
 
 import com.fasterxml.jackson.databind.util.JSONPObject;
 import com.interfaces.PayLoadValidator;
+import org.json.JSONObject;
 
 public class TransactionAPI implements PayLoadValidator {
     @Override
@@ -25,12 +26,12 @@ public class TransactionAPI implements PayLoadValidator {
     }
 
     @Override
-    public JSONPObject get(String s) {
+    public JSONObject get(String s) {
         return null;
     }
 
     @Override
-    public void validatePayload(JSONPObject payload) {
+    public void validatePayload(JSONObject payload) {
 
     }
 

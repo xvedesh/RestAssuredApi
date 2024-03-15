@@ -1,6 +1,7 @@
 package com.interfaces;
 
-import com.fasterxml.jackson.databind.util.JSONPObject;
+
+import org.json.JSONObject;
 
 public interface PayLoadValidator {
 
@@ -8,7 +9,7 @@ public interface PayLoadValidator {
     void patch(String s);
     void put(String s);
     void delete(String s);
-    JSONPObject get(String s);
-    void validatePayload(JSONPObject payload);
+    JSONObject get(String s);
+    void validatePayload(JSONObject payload);
     void validateDeletion(String s);
 }
