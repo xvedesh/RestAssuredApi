@@ -6,27 +6,27 @@ import org.json.JSONObject;
 
 public class TransactionAPI implements PayLoadValidator {
     @Override
-    public void post(String s) {
+    public void post() {
 
     }
 
     @Override
-    public void patch(String s) {
+    public void patch() {
 
     }
 
     @Override
-    public void put(String s) {
+    public void put() {
 
     }
 
     @Override
-    public void delete(String s) {
+    public void delete() {
 
     }
 
     @Override
-    public JSONObject get(String s) {
+    public JSONObject get() {
         return null;
     }
 
@@ -36,7 +36,7 @@ public class TransactionAPI implements PayLoadValidator {
     }
 
     @Override
-    public void validateDeletion(String s) {
+    public void validateDeletion() {
 
     }
 }
