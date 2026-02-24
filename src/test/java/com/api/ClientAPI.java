@@ -39,7 +39,7 @@ public class ClientAPI extends BaseTest implements PayLoadValidator {
                 .pathParam("clientId", client.getId())
                 .body(patchBody())
                 .when()
-                .patch(baseURI + allClientsEndPoint + clientEndPoint)
+                .patch(baseURI + clientEndPoint)
                 .prettyPeek()
                 .path("accessToken");
     }
@@ -53,7 +53,7 @@ public class ClientAPI extends BaseTest implements PayLoadValidator {
                 .pathParam("clientId", client.getId())
                 .body(putBody())
                 .when()
-                .put(baseURI + allClientsEndPoint + clientEndPoint)
+                .put(baseURI + clientEndPoint)
                 .prettyPeek()
                 .path("accessToken");
     }
@@ -66,7 +66,7 @@ public class ClientAPI extends BaseTest implements PayLoadValidator {
                 .headers(returnAuthHeaders())
                 .pathParam("clientId", client.getId())
                 .when()
-                .delete(baseURI + allClientsEndPoint + clientEndPoint)
+                .delete(baseURI + clientEndPoint)
                 .prettyPeek();
         if(response.getStatusCode() == 200) {
             deletionSuccessful = true;
@@ -81,7 +81,7 @@ public class ClientAPI extends BaseTest implements PayLoadValidator {
                 .headers(returnAuthHeaders())
                 .pathParam("clientId", client.getId())
                 .when()
-                .get(baseURI + allClientsEndPoint + clientEndPoint)
+                .get(baseURI + clientEndPoint)
                 .prettyPeek();
 
         String responseBody = response.getBody().asString();
@@ -104,7 +104,7 @@ public class ClientAPI extends BaseTest implements PayLoadValidator {
             Object actualValue = responseMap.get(attribute);
             if (attribute.equals("id") && expectedValue instanceof UUID) {
                 Assert.assertEquals("Value mismatch for attribute: " + attribute,
-                        ((UUID) expectedValue).toString(), actualValue);
+                        expectedValue.toString(), actualValue);
             } else {
                 Assert.assertEquals("Value mismatch for attribute: " + attribute, expectedValue, actualValue);
             }

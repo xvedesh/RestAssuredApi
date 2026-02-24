@@ -2,6 +2,7 @@ package com.api;
 
 import com.utils.ConfigurationReader;
 
+import java.util.Optional;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -11,7 +12,12 @@ import static io.restassured.RestAssured.given;
 public class BaseTest {
 
     private static String token = "";
-    public static final String baseURI = ConfigurationReader.getProperty("baseURI");
+    public static final String baseURI =
+            System.getProperty(
+                    "baseURI",
+                    Optional.ofNullable(System.getenv("BASE_URI"))
+                            .orElse(ConfigurationReader.getProperty("baseURI"))
+            );
     private static final String authEndPoint = ConfigurationReader.getProperty("authEndPoint");
     public static final String clientEndPoint = ConfigurationReader.getProperty("clientEndPoint");
     public static final String allClientsEndPoint = ConfigurationReader.getProperty("allClientsEndPoint");

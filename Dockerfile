@@ -1,18 +1,12 @@
-# Use OpenJDK 11 as the base image
-FROM openjdk:11-jdk-slim
+FROM maven:3.9-eclipse-temurin-11
 
-# Install Maven
-RUN apt-get update && \
-    apt-get install -y maven
-
-# Set the working directory in the container
 WORKDIR /app
+COPY pom.xml .
+COPY src ./src
+COPY config.properties ./config.properties
 
-# Copy the project files into the working directory
-COPY . .
+RUN mvn -q -DskipTests clean package
 
-# Build the project without running tests
-RUN mvn clean install -DskipTests
+ENV CUCUMBER_TAGS="@ClientData"
 
-# Command to run tests
-CMD ["mvn", "test", "-Dcucumber.filter.tags=@ClientData"]
+CMD mvn -q test -Dcucumber.filter.tags=${CUCUMBER_TAGS}

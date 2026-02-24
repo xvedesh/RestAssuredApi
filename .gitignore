@@ -1,0 +1,9 @@
+.idea/
+*.iml
+out/
+target/
+server/node_modules/
+.env*
+!.env.example
+.DS_Store
+Thumbs.db

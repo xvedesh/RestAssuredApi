@@ -1,0 +1,250 @@
+{
+  "clients": [
+    {
+      "id": 1,
+      "firstName": "John",
+      "lastName": "Doe",
+      "email": "john.doe@example.com",
+      "phone": "123-456-7890",
+      "address": {
+        "street": "123 Elm Street",
+        "city": "Metropolis",
+        "state": "NY",
+        "zipCode": "10101"
+      }
+    },
+    {
+      "id": 2,
+      "firstName": "Emily",
+      "lastName": "Smith",
+      "email": "emily.smith@example.com",
+      "phone": "987-654-3210",
+      "address": {
+        "street": "456 Maple Avenue",
+        "city": "Springfield",
+        "state": "IL",
+        "zipCode": "62629"
+      }
+    },
+    {
+      "id": 3,
+      "firstName": "Cedric",
+      "lastName": "Beier",
+      "email": "loretta.pouros@hotmail.com",
+      "phone": "823-256-3000",
+      "address": {
+        "street": "18704 Gayle Flat",
+        "city": "Mitzieport",
+        "state": "NY",
+        "zipCode": "73510"
+      }
+    },
+    {
+      "id": 6,
+      "firstName": "Laurette",
+      "lastName": "Osinski",
+      "email": "cassondra.hermiston@yahoo.com",
+      "phone": "785-201-0842",
+      "address": {
+        "street": "34996 Cruickshank Forks",
+        "city": "East Marketta",
+        "state": "LA",
+        "zipCode": "37205"
+      }
+    },
+    {
+      "id": "164073ae-c5e3-44de-a15c-a07b059144fd",
+      "firstName": "Neely",
+      "lastName": "Greenfelder",
+      "email": "gene.spinka@gmail.com",
+      "phone": "211-288-5121",
+      "address": {
+        "street": "925 Glenn Circles",
+        "city": "Wintheiserborough",
+        "state": "MT",
+        "zipCode": "83666"
+      }
+    },
+    {
+      "id": "1d4d9024-d1b2-4e17-a3c6-a4e6aaa315dc",
+      "firstName": "Clair",
+      "lastName": "Skiles",
+      "email": "jonelle.koepp@yahoo.com",
+      "phone": "772-827-9253",
+      "address": {
+        "street": "9406 Bernie Drive",
+        "city": "Wiltonport",
+        "state": "KS",
+        "zipCode": "60472"
+      }
+    },
+    {
+      "id": "28470216-0c9b-4613-be68-552037cae26b",
+      "firstName": "Frank",
+      "lastName": "Wiegand",
+      "email": "morgan.schultz@hotmail.com",
+      "phone": "336-824-2619",
+      "address": {
+        "street": "22341 Spinka Harbors",
+        "city": "East Earnest",
+        "state": "WI",
+        "zipCode": "92074"
+      }
+    },
+    {
+      "id": "9f8b7478-2c83-4329-8551-2fb433492685",
+      "firstName": "Karla",
+      "lastName": "Hackett",
+      "email": "harlan.schimmel@gmail.com",
+      "phone": "099-320-0907",
+      "address": {
+        "street": "678 Drew Radial",
+        "city": "Russelport",
+        "state": "MN",
+        "zipCode": "39584"
+      }
+    },
+    {
+      "id": "523056f1-1965-4bfd-9cc0-1625eff2ed05",
+      "firstName": "Graham",
+      "lastName": "Fritsch",
+      "email": "audria.lubowitz@yahoo.com",
+      "phone": "349-171-1615",
+      "address": {
+        "street": "95711 Ankunding Village",
+        "city": "Legrosside",
+        "state": "NV",
+        "zipCode": "95434"
+      }
+    },
+    {
+      "id": "99e44d73-162a-4f09-a1dd-5c5384b248a2",
+      "firstName": "Tajuana",
+      "lastName": "Schoen",
+      "email": "eula.cummings@hotmail.com",
+      "phone": "103-450-0806",
+      "address": {
+        "street": "59356 Olson Way",
+        "city": "Juanitaview",
+        "state": "VA",
+        "zipCode": "39066"
+      }
+    }
+  ],
+  "accounts": [
+    {
+      "id": "A123456",
+      "clientId": 1,
+      "type": "Investment",
+      "balance": 890000,
+      "currency": "USD",
+      "creationDate": "2024-03-25"
+    },
+    {
+      "id": "A654321",
+      "clientId": 1,
+      "type": "Savings",
+      "balance": 50000,
+      "currency": "USD",
+      "creationDate": "2021-02-15"
+    },
+    {
+      "id": "A123457",
+      "clientId": 2,
+      "type": "Investment",
+      "balance": 350000,
+      "currency": "USD",
+      "creationDate": "2023-01-20"
+    },
+    {
+      "id": "A654323",
+      "clientId": 2,
+      "type": "Savings",
+      "balance": 60000,
+      "currency": "USD",
+      "creationDate": "2022-02-15"
+    }
+  ],
+  "portfolios": [
+    {
+      "id": "P123456",
+      "clientId": 1,
+      "name": "Retirement Fund",
+      "assets": [
+        {
+          "assetId": "ASSET001",
+          "type": "Stock",
+          "name": "Tech Innovators Fund",
+          "quantity": 150,
+          "currentValue": 15000
+        },
+        {
+          "assetId": "ASSET002",
+          "type": "Bond",
+          "name": "Government Bonds Fund",
+          "quantity": 200,
+          "currentValue": 10000
+        }
+      ]
+    },
+    {
+      "id": "P123458",
+      "clientId": 2,
+      "name": "Retirement Fund",
+      "assets": [
+        {
+          "assetId": "ASSET006",
+          "type": "Stock",
+          "name": "Innovators Tech Fund",
+          "quantity": 160,
+          "currentValue": 17000
+        },
+        {
+          "assetId": "ASSET008",
+          "type": "Bond",
+          "name": "State Bonds Fund",
+          "quantity": 100,
+          "currentValue": 5000
+        }
+      ]
+    }
+  ],
+  "transactions": [
+    {
+      "id": "T123456789",
+      "clientId": 1,
+      "date": "2021-03-01",
+      "type": "Deposit",
+      "amount": 20000,
+      "currency": "USD",
+      "accountId": "A123456"
+    },
+    {
+      "id": "T987654321",
+      "clientId": 1,
+      "date": "2021-04-01",
+      "type": "Withdrawal",
+      "amount": 5000,
+      "currency": "USD",
+      "accountId": "A654321"
+    },
+    {
+      "id": "T123456778",
+      "clientId": 2,
+      "date": "2022-03-01",
+      "type": "Deposit",
+      "amount": 30000,
+      "currency": "USD",
+      "accountId": "A123457"
+    },
+    {
+      "id": "T987654397",
+      "clientId": 2,
+      "date": "2022-04-01",
+      "type": "Withdrawal",
+      "amount": 6000,
+      "currency": "USD",
+      "accountId": "A654323"
+    }
+  ]
+}
