@@ -12,6 +12,9 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <cucumber.version>7.2.3</cucumber.version>
+        <cucumber.threads>4</cucumber.threads>
+        <testng.suite.file>testng.xml</testng.suite.file>
     </properties>
 
     <build>
@@ -21,13 +24,16 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.0.0-M5</version>
                 <configuration>
-                    <parallel>methods</parallel>
-                    <threadCount>4</threadCount>
-                    <perCoreThreadCount>false</perCoreThreadCount>
                     <testFailureIgnore>true</testFailureIgnore>
-                    <includes>
-                        <include>**/CukesRunner*.java</include>
-                    </includes>
+                    <suiteXmlFiles>
+                        <suiteXmlFile>${testng.suite.file}</suiteXmlFile>
+                    </suiteXmlFiles>
+                    <properties>
+                        <property>
+                            <name>dataproviderthreadcount</name>
+                            <value>${cucumber.threads}</value>
+                        </property>
+                    </properties>
                 </configuration>
             </plugin>
         </plugins>
@@ -58,14 +64,21 @@
         <dependency>
             <groupId>io.cucumber</groupId>
             <artifactId>cucumber-java</artifactId>
-            <version>7.2.3</version>
+            <version>${cucumber.version}</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/io.cucumber/cucumber-junit -->
         <dependency>
             <groupId>io.cucumber</groupId>
             <artifactId>cucumber-junit</artifactId>
-            <version>7.2.3</version>
+            <version>${cucumber.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-testng</artifactId>
+            <version>${cucumber.version}</version>
             <scope>test</scope>
         </dependency>
 

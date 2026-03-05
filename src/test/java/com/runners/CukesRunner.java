@@ -1,10 +1,9 @@
 package com.runners;
 
-import io.cucumber.junit.Cucumber;
-import io.cucumber.junit.CucumberOptions;
-import org.junit.runner.RunWith;
+import io.cucumber.testng.AbstractTestNGCucumberTests;
+import io.cucumber.testng.CucumberOptions;
+import org.testng.annotations.DataProvider;
 
-@RunWith(Cucumber.class)
 @CucumberOptions(
         plugin = {
                 "json:target/cucumber.json",
@@ -16,9 +15,13 @@ import org.junit.runner.RunWith;
         features = "src/test/resources/features",
         glue = "com/step_defs",
         dryRun = false,
-        tags ="@ClientData"
-
+        tags = "@ClientData"
 )
-public class CukesRunner {
+public class CukesRunner extends AbstractTestNGCucumberTests {
 
+    @Override
+    @DataProvider(parallel = true)
+    public Object[][] scenarios() {
+        return super.scenarios();
+    }
 }

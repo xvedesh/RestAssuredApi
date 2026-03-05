@@ -6,7 +6,7 @@
 This repository provides a self-contained API testing ecosystem. It includes a mock backend and a modern Java-based test suite, designed for local development, containerized execution, and CI/CD integration.
 
 * **Mock API Server:** Node.js, json-server, JWT-based authentication
-* **Java Test Framework:** Java 11, Maven, RestAssured, Cucumber (JUnit 5)
+* **Java Test Framework:** Java 11, Maven, RestAssured, Cucumber + TestNG
 
 ---
 
@@ -32,6 +32,8 @@ This repository provides a self-contained API testing ecosystem. It includes a m
 ```
 +-- docker-compose.yml     # Multi-container orchestration
 +-- config.properties      # Default framework configuration
++-- testng.xml             # Main TestNG suite (parallel execution)
++-- testng-rerun.xml       # TestNG suite for failed test rerun
 +-- src/                   # Java test source code
 +-- server/                # Node.js API server
 |   +-- index.js           # Server logic & Auth middleware
@@ -119,23 +121,58 @@ npm start
 **IntelliJ IDEA (Bundled Maven):**
 
 ```bash
-mvn clean test -Dcucumber.filter.tags=@ClientData -DbaseURI=http://localhost:3000
+mvn clean test -Dtestng.suite.file=testng.xml -DbaseURI=http://localhost:3000
 
 ```
 
 **Linux/macOS (Maven Wrapper):**
 
 ```bash
-./mvnw clean test -Dcucumber.filter.tags=@ClientData -DbaseURI=http://localhost:3000
+./mvnw clean test -Dtestng.suite.file=testng.xml -DbaseURI=http://localhost:3000
 
 ```
 
 **Windows PowerShell (Maven Wrapper):**
 
 ```bash
-.\mvnw.cmd clean test --% -Dcucumber.filter.tags=@ClientData -DbaseURI=http://localhost:3000
+.\mvnw.cmd clean test --% -Dtestng.suite.file=testng.xml -DbaseURI=http://localhost:3000
 
 ```
+
+---
+
+## Parallel Test Execution (TestNG)
+
+Parallel execution is configured through TestNG suite files and Surefire properties.
+
+### Main Parallel Run
+* Suite file: `testng.xml`
+* Current mode: `parallel="methods"` and `thread-count="4"`
+* Command:
+
+```bash
+.\mvnw.cmd clean test --% -Dtestng.suite.file=testng.xml -DbaseURI=http://localhost:3000
+```
+
+### Failed Scenarios Rerun
+* Failed scenarios list is generated to: `target/rerun.txt`
+* Rerun suite file: `testng-rerun.xml`
+* Command:
+
+```bash
+.\mvnw.cmd test --% -Dtestng.suite.file=testng-rerun.xml -DbaseURI=http://localhost:3000
+```
+
+### How to Change Parallelism
+1. Update TestNG suite threads in `testng.xml`:
+```xml
+<suite name="Cucumber Main Suite" parallel="methods" thread-count="6">
+```
+2. Update Cucumber DataProvider thread count in `pom.xml` property:
+```xml
+<cucumber.threads>6</cucumber.threads>
+```
+3. Keep both values aligned for predictable CI behavior.
 
 ---
 
@@ -158,6 +195,9 @@ jobs:
       - uses: actions/checkout@v4
       - name: Run API Tests
         run: docker compose up --build --abort-on-container-exit --exit-code-from api-tests
+      - name: Rerun Failed Scenarios
+        if: always()
+        run: docker compose run --rm api-tests ./mvnw test -Dtestng.suite.file=testng-rerun.xml -DbaseURI=http://json-server:3000
       - name: Cleanup
         if: always()
         run: docker compose down

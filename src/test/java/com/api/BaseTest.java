@@ -11,7 +11,7 @@ import static io.restassured.RestAssured.given;
 
 public class BaseTest {
 
-    private static String token = "";
+    private static final ThreadLocal<String> token = ThreadLocal.withInitial(() -> "");
     public static final String baseURI =
             System.getProperty(
                     "baseURI",
@@ -26,7 +26,7 @@ public class BaseTest {
     public static final String portfolioEndPoint = ConfigurationReader.getProperty("portfolioEndPoint");
 
     public static void generateToken() {
-        token = "Bearer " + given()
+        token.set("Bearer " + given()
                 .log()
                 .all()
                 .headers(returnAuthHeaders())
@@ -34,7 +34,7 @@ public class BaseTest {
                 .when()
                 .post(baseURI + authEndPoint)
                 .prettyPeek()
-                .path("accessToken");
+                .path("accessToken"));
     }
 
 
@@ -48,8 +48,12 @@ public class BaseTest {
 
     public static Map<String, String> returnAuthHeaders() {
         Map<String,String> map = new HashMap<>();
-        map.put("Authorization", token);
+        map.put("Authorization", token.get());
         map.put("Content-Type", "application/json");
         return map;
+    }
+
+    public static void clearThreadContext() {
+        token.remove();
     }
 }
