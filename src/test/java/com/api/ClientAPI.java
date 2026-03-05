@@ -26,8 +26,7 @@ public class ClientAPI extends BaseTest implements PayLoadValidator {
                 .body(returnBody())
                 .when()
                 .post(baseURI + allClientsEndPoint)
-                .prettyPeek()
-                .path("accessToken");
+                .prettyPeek();
     }
 
     @Override
@@ -40,8 +39,7 @@ public class ClientAPI extends BaseTest implements PayLoadValidator {
                 .body(patchBody())
                 .when()
                 .patch(baseURI + clientEndPoint)
-                .prettyPeek()
-                .path("accessToken");
+                .prettyPeek();
     }
 
     @Override
@@ -54,8 +52,7 @@ public class ClientAPI extends BaseTest implements PayLoadValidator {
                 .body(putBody())
                 .when()
                 .put(baseURI + clientEndPoint)
-                .prettyPeek()
-                .path("accessToken");
+                .prettyPeek();
     }
 
     @Override
