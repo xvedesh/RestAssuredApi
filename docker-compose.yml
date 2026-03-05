@@ -16,5 +16,4 @@ services:
       - ./target:/app/target
     environment:
       BASE_URI: http://json-server:3000
-      CUCUMBER_TAGS: "@ClientData"
 

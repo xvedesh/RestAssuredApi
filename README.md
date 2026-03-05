@@ -206,6 +206,45 @@ jobs:
 
 ---
 
+## Reports
+
+After test execution, the framework generates:
+* Cucumber JSON: `target/cucumber.json`
+* Cucumber basic HTML: `target/cucumber-report.html`
+* Cucumber PrettyReports: `target/cucumber/cucumber-html-reports/overview-features.html`
+* TestNG/Surefire HTML dashboard: `target/surefire-reports/index.html`
+* Failed scenarios list for rerun: `target/rerun.txt`
+
+### Open Reports in Browser (Windows PowerShell)
+
+```powershell
+start .\target\cucumber\cucumber-html-reports\overview-features.html
+start .\target\surefire-reports\index.html
+```
+
+If `start` does not work in your shell:
+
+```powershell
+Invoke-Item .\target\cucumber\cucumber-html-reports\overview-features.html
+Invoke-Item .\target\surefire-reports\index.html
+```
+
+### Open Reports in Browser (Linux)
+
+```bash
+xdg-open ./target/cucumber/cucumber-html-reports/overview-features.html
+xdg-open ./target/surefire-reports/index.html
+```
+
+### Open Reports in Browser (macOS)
+
+```bash
+open ./target/cucumber/cucumber-html-reports/overview-features.html
+open ./target/surefire-reports/index.html
+```
+
+---
+
 ## Troubleshooting
 
 ### Connection Refused

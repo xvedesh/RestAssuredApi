@@ -5,7 +5,7 @@ import io.restassured.response.Response;
 import org.json.*;
 import com.github.javafaker.Faker;
 import com.interfaces.PayLoadValidator;
-import org.junit.Assert;
+import org.testng.Assert;
 
 import java.util.*;
 
@@ -101,10 +101,10 @@ public class ClientAPI extends BaseTest implements PayLoadValidator {
             Object expectedValue = pojoMap.get(attribute);
             Object actualValue = responseMap.get(attribute);
             if (attribute.equals("id") && expectedValue instanceof UUID) {
-                Assert.assertEquals("Value mismatch for attribute: " + attribute,
-                        expectedValue.toString(), actualValue);
+                Assert.assertEquals(actualValue, expectedValue.toString(),
+                        "Value mismatch for attribute: " + attribute);
             } else {
-                Assert.assertEquals("Value mismatch for attribute: " + attribute, expectedValue, actualValue);
+                Assert.assertEquals(actualValue, expectedValue, "Value mismatch for attribute: " + attribute);
             }
         }
     }
