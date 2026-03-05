@@ -46,7 +46,7 @@ This repository provides a self-contained API testing ecosystem. It includes a m
 
 | Environment | Requirements |
 | --- | --- |
-| **Local Mode** | Java 11, Maven 3.8+, Node.js |
+| **Local Mode** | Java 11, Node.js (Maven wrapper included in repo) |
 | **Docker Mode** | Docker Desktop & Docker Compose |
 
 ---
@@ -64,12 +64,40 @@ docker compose up --build --abort-on-container-exit --exit-code-from api-tests
 
 ```
 
+**Run and Save Full Log (Windows PowerShell):**
+
+```powershell
+docker compose up --build --abort-on-container-exit --exit-code-from api-tests | Tee-Object run.log
+
+```
+
+**Run and Save Full Log (Linux/macOS):**
+
+```bash
+docker compose up --build --abort-on-container-exit --exit-code-from api-tests | tee run.log
+
+```
+
+After the run:
+* `api-tests` exit code `0` means tests passed.
+* Full console output is stored in `run.log`.
+* Test artifacts are available on host under `./target` (mounted from container).
+
 **Clean Up:**
 
 ```bash
 docker compose down
 
 ```
+
+### Docker Workflow for Remote Development
+
+Use this when coding from another machine (for example via VS Code Remote SSH):
+1. Open the repository on the remote machine.
+2. Edit code normally.
+3. Re-run Docker tests with one of the commands above.
+4. Inspect `run.log` and `./target` after each run.
+5. Repeat edit -> run -> inspect.
 
 ### Option B: Local Mode
 
@@ -86,10 +114,26 @@ npm start
 
 *The server will run on: http://localhost:3000*
 
-**2. Execute Tests:**
+**2. Execute Tests (choose your environment):**
+
+**IntelliJ IDEA (Bundled Maven):**
 
 ```bash
-mvn clean test -Dcucumber.filter.tags="@ClientData" -DbaseURI=http://localhost:3000
+mvn clean test -Dcucumber.filter.tags=@ClientData -DbaseURI=http://localhost:3000
+
+```
+
+**Linux/macOS (Maven Wrapper):**
+
+```bash
+./mvnw clean test -Dcucumber.filter.tags=@ClientData -DbaseURI=http://localhost:3000
+
+```
+
+**Windows PowerShell (Maven Wrapper):**
+
+```bash
+.\mvnw.cmd clean test --% -Dcucumber.filter.tags=@ClientData -DbaseURI=http://localhost:3000
 
 ```
 

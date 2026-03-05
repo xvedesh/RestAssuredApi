@@ -11,6 +11,9 @@ services:
     build: .
     depends_on:
       - json-server
+    volumes:
+      # persist test reports/artifacts on host for inspection
+      - ./target:/app/target
     environment:
       BASE_URI: http://json-server:3000
       CUCUMBER_TAGS: "@ClientData"
