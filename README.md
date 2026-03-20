@@ -1,18 +1,18 @@
 # AI Kafka Validator
 
-AI Kafka Validator is an AI-powered Kafka messaging validation testing framework designed to validate both REST APIs and asynchronous event-driven flows. It combines RestAssured, Cucumber, TestNG, JSON Server, and Kafka to verify CRUD behavior, event publishing, relationship rules, negative business validations, and cross-entity workflows in a single framework that is easy to run locally or in Docker.
+AI Kafka Validator is an AI-powered Kafka messaging validation testing framework designed to validate both REST APIs and asynchronous event-driven flows. It combines RestAssured, Cucumber, TestNG, JSON Server, and Kafka to verify CRUD behavior, event publishing, relationship rules, negative business validations, and cross-entity workflows in a single runnable project.
 
-## Selling Executive Introduction
+## Overview
 
-This framework demonstrates how a Senior SDET can validate more than HTTP status codes. It proves that:
+This framework validates both API responses and Kafka event side effects, including business relationship rules, negative scenarios, and chained cross-entity flows.
 
-- APIs return the correct business response
-- the backend publishes the correct Kafka event
-- invalid business relationships are rejected consistently
-- blocked operations do not emit unwanted events
-- runtime test data can be restored safely through a repeatable seed/reset mechanism
+It covers:
 
-The result is a compact but realistic quality engineering platform for event-aware API systems.
+- synchronous API response validation
+- asynchronous Kafka event validation
+- business relationship and dependency checks in the mock backend
+- negative scenarios that verify failed operations do not emit matching Kafka events
+- repeatable runtime data reset through `seed-data.json -> clients.json`
 
 ## Key Capabilities
 
@@ -26,6 +26,52 @@ The result is a compact but realistic quality engineering platform for event-awa
 - local execution support with Kafka in Docker and server/tests on host
 - protected runtime data via `seed-data.json -> clients.json` reset flow
 - HTML, JSON, Pretty Cucumber, and Surefire reports
+- automatic and manual failure analysis through the Failure Analysis Agent
+- local setup and onboarding assistance through the Setup / Onboarding Agent
+
+## Quick Start
+
+### Docker
+
+Run the full stack:
+
+```bash
+docker compose up --build --abort-on-container-exit --exit-code-from api-tests
+```
+
+### Local
+
+1. Start Kafka:
+
+```bash
+docker compose -f docker-compose.kafka.yml up -d
+```
+
+2. Start the mock API:
+
+```bash
+cd server
+npm install
+KAFKA_BOOTSTRAP_SERVERS=localhost:9092 \
+KAFKA_CLIENT_EVENTS_TOPIC=client-events \
+KAFKA_ACCOUNT_EVENTS_TOPIC=account-events \
+KAFKA_PORTFOLIO_EVENTS_TOPIC=portfolio-events \
+KAFKA_TRANSACTION_EVENTS_TOPIC=transaction-events \
+npm start
+```
+
+3. Run the test suite from the project root:
+
+```bash
+sh ./mvnw clean test \
+  -Dtestng.suite.file=testng.xml \
+  -DbaseURI=http://localhost:3000 \
+  -DkafkaBootstrapServers=localhost:9092 \
+  -DkafkaClientEventsTopic=client-events \
+  -DkafkaAccountEventsTopic=account-events \
+  -DkafkaPortfolioEventsTopic=portfolio-events \
+  -DkafkaTransactionEventsTopic=transaction-events
+```
 
 ## Architecture Overview
 
@@ -40,13 +86,13 @@ The framework has three active runtime layers:
 
 Execution flow:
 
-1. Cucumber step triggers an API action through a Java API class
-2. Request hits the Node mock service
-3. Service validates business rules and relationships
-4. Service persists changes into `clients.json`
-5. Service publishes a Kafka event when the operation succeeds
-6. Java Kafka consumer reads the matching message by business key
-7. Test validates HTTP response, Kafka metadata, and Kafka payload
+1. A Cucumber step triggers an API action through a Java API class.
+2. The request hits the Node mock service.
+3. The service validates business rules and relationships.
+4. The service persists changes into `clients.json`.
+5. The service publishes a Kafka event when the operation succeeds.
+6. A Java Kafka consumer reads the matching message by business key.
+7. The test validates HTTP response, Kafka metadata, and Kafka payload.
 
 ## Domain Coverage
 
@@ -78,20 +124,20 @@ Kafka event coverage currently implemented:
 - Portfolio: `PORTFOLIO_CREATED`, `PORTFOLIO_UPDATED`, `PORTFOLIO_PATCHED`, `PORTFOLIO_DELETED`
 - Transaction: `TRANSACTION_CREATED`, `TRANSACTION_UPDATED`, `TRANSACTION_PATCHED`, `TRANSACTION_DELETED`
 
-Current executable feature set in the project:
+Feature coverage in the repository:
 
-- happy-path CRUD validation through [ClientService.feature](/Users/vivedesh/ai-kafka-validator/src/test/resources/features/ClientService.feature)
+- happy-path CRUD validation through [ClientService.feature](src/test/resources/features/ClientService.feature)
 - Kafka E2E validation through:
-  - [ClientKafkaE2E.feature](/Users/vivedesh/ai-kafka-validator/src/test/resources/features/ClientKafkaE2E.feature)
-  - [AccountKafkaE2E.feature](/Users/vivedesh/ai-kafka-validator/src/test/resources/features/AccountKafkaE2E.feature)
-  - [PortfolioKafkaE2E.feature](/Users/vivedesh/ai-kafka-validator/src/test/resources/features/PortfolioKafkaE2E.feature)
-  - [TransactionKafkaE2E.feature](/Users/vivedesh/ai-kafka-validator/src/test/resources/features/TransactionKafkaE2E.feature)
-- negative validation coverage through [NegativeValidationE2E.feature](/Users/vivedesh/ai-kafka-validator/src/test/resources/features/NegativeValidationE2E.feature)
-- chained business flow coverage through [CrossEntityBusinessFlow.feature](/Users/vivedesh/ai-kafka-validator/src/test/resources/features/CrossEntityBusinessFlow.feature)
+  - [ClientKafkaE2E.feature](src/test/resources/features/ClientKafkaE2E.feature)
+  - [AccountKafkaE2E.feature](src/test/resources/features/AccountKafkaE2E.feature)
+  - [PortfolioKafkaE2E.feature](src/test/resources/features/PortfolioKafkaE2E.feature)
+  - [TransactionKafkaE2E.feature](src/test/resources/features/TransactionKafkaE2E.feature)
+- negative validation coverage through [NegativeValidationE2E.feature](src/test/resources/features/NegativeValidationE2E.feature)
+- chained business flow coverage through [CrossEntityBusinessFlow.feature](src/test/resources/features/CrossEntityBusinessFlow.feature)
 
 ## Business Rules / Relationships
 
-The framework already enforces business validation rules inside the Node mock backend.
+The Node mock backend enforces business validation rules before persistence and Kafka publishing.
 
 Relationship rules:
 
@@ -110,13 +156,13 @@ Delete dependency rules:
 - Portfolio delete is allowed without dependency checks
 - Transaction delete is allowed without dependency checks
 
-HTTP behavior used in the current implementation:
+HTTP behavior used by the current implementation:
 
 - `400 Bad Request` for relationship and business validation failures
 - `409 Conflict` for dependency-blocked delete operations
 - `404 Not Found` when the target resource itself does not exist
 
-Example server-side messages returned by the current code:
+Example server-side messages:
 
 - `Client not found for clientId=...`
 - `Account not found for accountId=...`
@@ -130,7 +176,7 @@ Example server-side messages returned by the current code:
 
 Kafka validation is not based on “first message in topic”. The framework consumes by matching the business key for the current scenario.
 
-Current matching strategy:
+Matching strategy:
 
 - Client events are matched by `clientId` and `eventType`
 - Account, Portfolio, and Transaction events are matched by `entityId` and `eventType`
@@ -145,7 +191,7 @@ Client events:
   "entityType": "CLIENT",
   "clientId": "....",
   "timestamp": "...",
-  "payload": { }
+  "payload": {}
 }
 ```
 
@@ -157,11 +203,11 @@ Entity events:
   "entityType": "ACCOUNT",
   "entityId": "A123456",
   "timestamp": "...",
-  "payload": { }
+  "payload": {}
 }
 ```
 
-What the framework validates for successful Kafka scenarios:
+Successful Kafka scenarios validate:
 
 - expected topic
 - expected Kafka key
@@ -169,17 +215,17 @@ What the framework validates for successful Kafka scenarios:
 - expected entity type
 - payload equality against the latest API response
 
-What the framework validates for negative Kafka scenarios:
+Negative Kafka scenarios validate:
 
 - failed operations must not publish the matching Kafka event within the configured timeout
 
 Relevant Kafka support code:
 
-- [server/kafkaPublisher.js](/Users/vivedesh/ai-kafka-validator/server/kafkaPublisher.js)
-- [src/test/java/com/kafka/KafkaEventConsumer.java](/Users/vivedesh/ai-kafka-validator/src/test/java/com/kafka/KafkaEventConsumer.java)
-- [src/test/java/com/kafka/EntityKafkaEventConsumer.java](/Users/vivedesh/ai-kafka-validator/src/test/java/com/kafka/EntityKafkaEventConsumer.java)
-- [src/test/java/com/kafka/KafkaEventValidator.java](/Users/vivedesh/ai-kafka-validator/src/test/java/com/kafka/KafkaEventValidator.java)
-- [src/test/java/com/kafka/EntityKafkaEventValidator.java](/Users/vivedesh/ai-kafka-validator/src/test/java/com/kafka/EntityKafkaEventValidator.java)
+- [server/kafkaPublisher.js](server/kafkaPublisher.js)
+- [src/test/java/com/kafka/KafkaEventConsumer.java](src/test/java/com/kafka/KafkaEventConsumer.java)
+- [src/test/java/com/kafka/EntityKafkaEventConsumer.java](src/test/java/com/kafka/EntityKafkaEventConsumer.java)
+- [src/test/java/com/kafka/KafkaEventValidator.java](src/test/java/com/kafka/KafkaEventValidator.java)
+- [src/test/java/com/kafka/EntityKafkaEventValidator.java](src/test/java/com/kafka/EntityKafkaEventValidator.java)
 
 ## Project Structure
 
@@ -232,7 +278,7 @@ Local execution:
 
 ## Configuration
 
-Default configuration lives in [config.properties](/Users/vivedesh/ai-kafka-validator/config.properties):
+Default configuration lives in [config.properties](config.properties):
 
 ```properties
 baseURI=http://localhost:3000
@@ -278,9 +324,9 @@ The framework protects mock data through a seed/reset mechanism.
 
 Current data files:
 
-- [server/seed-data.json](/Users/vivedesh/ai-kafka-validator/server/seed-data.json)
+- [server/seed-data.json](server/seed-data.json)
   Purpose: immutable source dataset
-- [server/clients.json](/Users/vivedesh/ai-kafka-validator/server/clients.json)
+- [server/clients.json](server/clients.json)
   Purpose: runtime file used by `json-server`
 
 Current reset behavior:
@@ -296,9 +342,16 @@ cd server
 npm run reset-data
 ```
 
-This allows repeated test execution without permanently damaging the source dataset.
-
 ## How to Run
+
+### Docker Usage
+
+Two Compose files are kept intentionally:
+
+- [docker-compose.yml](docker-compose.yml) runs the full stack: Kafka, mock API, and Java tests
+- [docker-compose.kafka.yml](docker-compose.kafka.yml) starts Kafka only for hybrid local execution
+
+Use the main Compose file when you want one-command execution. Use the Kafka-only file when you want to run the Node server and Maven tests directly on the host.
 
 ### Option 1: Full Docker Execution
 
@@ -308,7 +361,7 @@ Run the full stack:
 docker compose up --build --abort-on-container-exit --exit-code-from api-tests
 ```
 
-Save the run log:
+Optionally save the run log:
 
 ```bash
 docker compose up --build --abort-on-container-exit --exit-code-from api-tests | tee run.log
@@ -341,10 +394,9 @@ KAFKA_TRANSACTION_EVENTS_TOPIC=transaction-events \
 npm start
 ```
 
-Run the full Java suite:
+Run the full Java suite from the project root:
 
 ```bash
-cd /Users/vivedesh/ai-kafka-validator
 sh ./mvnw clean test \
   -Dtestng.suite.file=testng.xml \
   -DbaseURI=http://localhost:3000 \
@@ -353,12 +405,6 @@ sh ./mvnw clean test \
   -DkafkaAccountEventsTopic=account-events \
   -DkafkaPortfolioEventsTopic=portfolio-events \
   -DkafkaTransactionEventsTopic=transaction-events
-```
-
-Run the Failure Analysis Agent after a failed run:
-
-```bash
-sh ./mvnw -q exec:java -Dexec.mainClass=com.analysis.failure.FailureAnalysisAgent
 ```
 
 Stop Kafka:
@@ -388,16 +434,10 @@ $env:KAFKA_TRANSACTION_EVENTS_TOPIC="transaction-events"
 npm start
 ```
 
-Run the suite:
+Run the suite from the project root:
 
 ```powershell
 .\mvnw.cmd clean test --% -Dtestng.suite.file=testng.xml -DbaseURI=http://localhost:3000 -DkafkaBootstrapServers=localhost:9092 -DkafkaClientEventsTopic=client-events -DkafkaAccountEventsTopic=account-events -DkafkaPortfolioEventsTopic=portfolio-events -DkafkaTransactionEventsTopic=transaction-events
-```
-
-Run the Failure Analysis Agent:
-
-```powershell
-.\mvnw.cmd -q exec:java --% -Dexec.mainClass=com.analysis.failure.FailureAnalysisAgent
 ```
 
 ### Readiness Checks
@@ -527,20 +567,14 @@ Current runner behavior:
 
 Generated report artifacts:
 
-- Cucumber HTML:
-  [target/cucumber-report.html](/Users/vivedesh/ai-kafka-validator/target/cucumber-report.html)
-- Pretty Cucumber report:
-  [target/cucumber/cucumber-html-reports/overview-features.html](/Users/vivedesh/ai-kafka-validator/target/cucumber/cucumber-html-reports/overview-features.html)
-- Cucumber JSON:
-  [target/cucumber.json](/Users/vivedesh/ai-kafka-validator/target/cucumber.json)
-- Surefire/TestNG report:
-  [target/surefire-reports/index.html](/Users/vivedesh/ai-kafka-validator/target/surefire-reports/index.html)
-- Failed scenario rerun list:
-  [target/rerun.txt](/Users/vivedesh/ai-kafka-validator/target/rerun.txt)
-- Automatic failure analysis markdown:
-  [target/failure-analysis.md](/Users/vivedesh/ai-kafka-validator/target/failure-analysis.md)
-- Automatic failure analysis HTML:
-  [target/surefire-reports/failure-analysis.html](/Users/vivedesh/ai-kafka-validator/target/surefire-reports/failure-analysis.html)
+- [target/cucumber-report.html](target/cucumber-report.html)
+- [target/cucumber/cucumber-html-reports/overview-features.html](target/cucumber/cucumber-html-reports/overview-features.html)
+- [target/cucumber.json](target/cucumber.json)
+- [target/surefire-reports/index.html](target/surefire-reports/index.html)
+- [target/rerun.txt](target/rerun.txt)
+- [target/failure-analysis.md](target/failure-analysis.md)
+- [target/surefire-reports/failure-analysis.html](target/surefire-reports/failure-analysis.html)
+- [target/cucumber/cucumber-html-reports/failure-analysis.html](target/cucumber/cucumber-html-reports/failure-analysis.html)
 
 Open reports on macOS:
 
@@ -573,7 +607,32 @@ sh ./mvnw test \
   -DkafkaTransactionEventsTopic=transaction-events
 ```
 
-Run the Failure Analysis Agent for only the most recent failed scenario:
+## Failure Analysis Agent
+
+The Failure Analysis Agent inspects real execution artifacts and produces a structured failure investigation report.
+
+It uses artifacts such as:
+
+- `target/cucumber.json`
+- `target/rerun.txt`
+- `target/surefire-reports/TestSuite.txt`
+
+Automatic behavior:
+
+- after TestNG execution finishes, the framework runs the Failure Analysis Agent automatically
+- if failed scenarios are present, it writes:
+  - `target/failure-analysis.md`
+  - `target/failure-analysis.html`
+  - `target/surefire-reports/failure-analysis.html`
+  - `target/cucumber/cucumber-html-reports/failure-analysis.html`
+
+Run the agent manually for all detected failures:
+
+```bash
+sh ./mvnw -q exec:java -Dexec.mainClass=com.analysis.failure.FailureAnalysisAgent
+```
+
+Run the agent for only the most recent failed scenario:
 
 ```bash
 sh ./mvnw -q exec:java \
@@ -581,23 +640,31 @@ sh ./mvnw -q exec:java \
   -Dfailure.analysis.mode=latest
 ```
 
-Generated analysis artifact:
+Manual PowerShell command:
 
-- Markdown failure report:
-  [target/failure-analysis.md](/Users/vivedesh/ai-kafka-validator/target/failure-analysis.md)
+```powershell
+.\mvnw.cmd -q exec:java --% -Dexec.mainClass=com.analysis.failure.FailureAnalysisAgent
+```
 
-Automatic trigger behavior:
+## Setup / Onboarding Agent
 
-- after TestNG execution finishes, the framework automatically runs the Failure Analysis Agent
-- if failed scenarios are present, it writes:
-  - `target/failure-analysis.md`
-  - `target/failure-analysis.html`
-  - `target/surefire-reports/failure-analysis.html`
-  - `target/cucumber/cucumber-html-reports/failure-analysis.html`
+The Setup / Onboarding Agent is a local RAG-style assistant for understanding, setting up, running, troubleshooting, and extending this framework.
+
+Run one question directly:
+
+```bash
+sh ./mvnw -q exec:java -Dexec.mainClass=com.analysis.onboarding.SetupOnboardingAgent -Dagent.question="How do I run only negative scenarios?"
+```
+
+Run interactive mode:
+
+```bash
+sh ./mvnw -q exec:java -Dexec.mainClass=com.analysis.onboarding.SetupOnboardingAgent
+```
+
+Additional details and usage examples are documented in [docs/onboarding-agent.md](docs/onboarding-agent.md).
 
 ## Enterprise Adoption / How to Extend
-
-The framework is intentionally small, but the extension path is already clear and practical.
 
 Safe extension points already present:
 
@@ -611,7 +678,7 @@ Safe extension points already present:
 - add more chained E2E flows across domains
 - scale selective execution using existing tag groups
 
-Recommended extension path:
+Suggested extension path:
 
 1. add the new entity to `server/seed-data.json`
 2. expose routes in `server/index.js`
@@ -619,18 +686,15 @@ Recommended extension path:
 4. add feature coverage
 5. add Kafka topic and event validation only if the entity emits events
 
-## Why This Framework is Valuable
+## Framework Scope
 
-This project is valuable because it shows more than CRUD automation.
+AI Kafka Validator combines REST API validation, Kafka event verification, mock backend business rules, and repeatable test data reset in a single runnable framework.
 
-It demonstrates:
+It currently covers:
 
-- API automation with maintainable test layering
-- event-driven validation beyond synchronous REST assertions
-- business relationship enforcement at the mock-service level
-- negative coverage that proves invalid requests do not leak Kafka side effects
-- chained domain flow validation across related entities
-- practical data protection through seed/reset instead of brittle manual cleanup
-- runnable local and Docker execution for portfolio, demo, and CI use cases
-
-In short, AI Kafka Validator represents a realistic Senior SDET-style approach to validating API systems that publish business events and must preserve data integrity across connected domains.
+- CRUD API validation across four related domains
+- event-driven validation for successful operations
+- relationship and dependency enforcement in the mock backend
+- negative scenarios that verify failed requests do not publish matching Kafka events
+- chained cross-entity flow validation
+- local, hybrid, and Docker-based execution paths

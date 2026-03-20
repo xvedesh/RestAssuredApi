@@ -65,10 +65,6 @@ function clientExists(clientId) {
   return Boolean(findClientById(clientId));
 }
 
-function accountExists(accountId) {
-  return Boolean(findById('accounts', accountId));
-}
-
 function validateAccountRelationship(account) {
   if (!clientExists(account.clientId)) {
     return `Client not found for clientId=${account.clientId}`;

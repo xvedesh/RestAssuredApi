@@ -1,27 +1,31 @@
 package com.utils;
 
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Properties;
 
-public class ConfigurationReader {
+public final class ConfigurationReader {
 
-    private static Properties configFile;
+    private static final Properties CONFIG_FILE = loadProperties();
 
-    static {
-        try {
-            FileInputStream fileInputStream = new FileInputStream("config.properties");
-            configFile = new Properties();
-            configFile.load(fileInputStream);
-            fileInputStream.close();
-        } catch (IOException e) {
-            System.out.println("Failed to load properties file!");
-            e.printStackTrace();
-        }
+    private ConfigurationReader() {
     }
 
     public static String getProperty(String key) {
-        return configFile.getProperty(key);
+        return CONFIG_FILE.getProperty(key);
     }
 
+    private static Properties loadProperties() {
+        Properties properties = new Properties();
+        Path configPath = Path.of("config.properties");
+
+        try (InputStream inputStream = Files.newInputStream(configPath)) {
+            properties.load(inputStream);
+            return properties;
+        } catch (IOException exception) {
+            throw new IllegalStateException("Failed to load configuration from " + configPath.toAbsolutePath(), exception);
+        }
+    }
 }

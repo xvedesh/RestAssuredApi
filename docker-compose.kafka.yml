@@ -1,3 +1,4 @@
+# Kafka-only helper for hybrid local execution
 services:
   kafka:
     image: confluentinc/cp-kafka:7.6.1

@@ -88,6 +88,8 @@ Command (mvn test OR docker compose up)
 4. Full Docker execution via [docker-compose.yml](/Users/vivedesh/ai-kafka-validator/docker-compose.yml)
 5. Hybrid local execution via [docker-compose.kafka.yml](/Users/vivedesh/ai-kafka-validator/docker-compose.kafka.yml)
 
+The two Compose files serve different purposes: the main file runs the full demo stack, while the Kafka-only file keeps local development lightweight.
+
 ## Business Validation Summary
 
 The backend currently enforces:
