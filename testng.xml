@@ -1,6 +1,6 @@
 <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd" >
-<suite name="Cucumber Main Suite" parallel="methods" thread-count="4">
-    <test name="Cucumber Main Tests">
+<suite name="AI Kafka Validator Main Suite" parallel="methods" thread-count="4">
+    <test name="AI Kafka Validator Main Tests">
         <classes>
             <class name="com.runners.CukesRunner"/>
         </classes>

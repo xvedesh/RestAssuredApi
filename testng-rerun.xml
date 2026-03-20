@@ -1,6 +1,6 @@
 <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd" >
-<suite name="Cucumber Rerun Suite" parallel="false" thread-count="1">
-    <test name="Cucumber Failed Tests">
+<suite name="AI Kafka Validator Rerun Suite" parallel="false" thread-count="1">
+    <test name="AI Kafka Validator Failed Tests">
         <classes>
             <class name="com.runners.FailedTestRunner"/>
         </classes>

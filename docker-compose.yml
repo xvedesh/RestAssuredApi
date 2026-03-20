@@ -1,19 +1,74 @@
 services:
+  kafka:
+    image: confluentinc/cp-kafka:7.6.1
+    labels:
+      framework.display-name: "AI Kafka Validator"
+      framework.repo-name: "ai-kafka-validator"
+    ports:
+      - "9092:9092"
+    environment:
+      CLUSTER_ID: MkU3OEVBNTcwNTJENDM2Qk
+      KAFKA_NODE_ID: "1"
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: "1"
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: "1"
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: "1"
+      KAFKA_NUM_PARTITIONS: "1"
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+    healthcheck:
+      test: ["CMD-SHELL", "kafka-topics --bootstrap-server localhost:9092 --list >/dev/null 2>&1"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+
   json-server:
     build: ./server
+    labels:
+      framework.display-name: "AI Kafka Validator"
+      framework.repo-name: "ai-kafka-validator"
+    depends_on:
+      kafka:
+        condition: service_healthy
     ports:
       - "3001:3000"   # optional: lets you hit the server from host
     volumes:
       # dev-friendly: edits to clients.json instantly apply in the container
       - ./server/clients.json:/usr/src/app/clients.json:rw
+      - ./server/seed-data.json:/usr/src/app/seed-data.json:ro
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      KAFKA_CLIENT_EVENTS_TOPIC: client-events
+      KAFKA_ACCOUNT_EVENTS_TOPIC: account-events
+      KAFKA_PORTFOLIO_EVENTS_TOPIC: portfolio-events
+      KAFKA_TRANSACTION_EVENTS_TOPIC: transaction-events
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:3000/health >/dev/null 2>&1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
 
   api-tests:
     build: .
+    labels:
+      framework.display-name: "AI Kafka Validator"
+      framework.repo-name: "ai-kafka-validator"
     depends_on:
-      - json-server
+      json-server:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
     volumes:
       # persist test reports/artifacts on host for inspection
       - ./target:/app/target
     environment:
       BASE_URI: http://json-server:3000
-
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      KAFKA_CLIENT_EVENTS_TOPIC: client-events
+      KAFKA_ACCOUNT_EVENTS_TOPIC: account-events
+      KAFKA_PORTFOLIO_EVENTS_TOPIC: portfolio-events
+      KAFKA_TRANSACTION_EVENTS_TOPIC: transaction-events

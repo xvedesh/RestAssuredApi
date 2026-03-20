@@ -16,10 +16,11 @@ public class ClientAPI extends BaseTest implements PayLoadValidator {
     private static final ThreadLocal<Client> client = ThreadLocal.withInitial(Client::new);
     private static final ThreadLocal<Client.Address> address = ThreadLocal.withInitial(Client.Address::new);
     private static final ThreadLocal<Boolean> deletionSuccessful = ThreadLocal.withInitial(() -> false);
+    private static final ThreadLocal<Response> latestResponse = new ThreadLocal<>();
 
     @Override
     public void post() {
-        given()
+        Response response = given()
                 .log()
                 .all()
                 .headers(returnAuthHeaders())
@@ -27,11 +28,12 @@ public class ClientAPI extends BaseTest implements PayLoadValidator {
                 .when()
                 .post(baseURI + allClientsEndPoint)
                 .prettyPeek();
+        latestResponse.set(response);
     }
 
     @Override
     public void patch() {
-        given()
+        Response response = given()
                 .log()
                 .all()
                 .headers(returnAuthHeaders())
@@ -40,11 +42,12 @@ public class ClientAPI extends BaseTest implements PayLoadValidator {
                 .when()
                 .patch(baseURI + clientEndPoint)
                 .prettyPeek();
+        latestResponse.set(response);
     }
 
     @Override
     public void put() {
-        given()
+        Response response = given()
                 .log()
                 .all()
                 .headers(returnAuthHeaders())
@@ -53,6 +56,7 @@ public class ClientAPI extends BaseTest implements PayLoadValidator {
                 .when()
                 .put(baseURI + clientEndPoint)
                 .prettyPeek();
+        latestResponse.set(response);
     }
 
     @Override
@@ -65,6 +69,7 @@ public class ClientAPI extends BaseTest implements PayLoadValidator {
                 .when()
                 .delete(baseURI + clientEndPoint)
                 .prettyPeek();
+        latestResponse.set(response);
         deletionSuccessful.set(response.getStatusCode() == 200);
     }
 
@@ -78,6 +83,7 @@ public class ClientAPI extends BaseTest implements PayLoadValidator {
                 .when()
                 .get(baseURI + clientEndPoint)
                 .prettyPeek();
+        latestResponse.set(response);
 
         String responseBody = response.getBody().asString();
         return new JSONObject(responseBody);
@@ -203,10 +209,42 @@ public class ClientAPI extends BaseTest implements PayLoadValidator {
                 "zipCode");
     }
 
+    public static Response getLatestResponse() {
+        return latestResponse.get();
+    }
+
+    @Override
+    public String getCurrentEntityId() {
+        return getCurrentClientId();
+    }
+
+    @Override
+    public String getEntityType() {
+        return "CLIENT";
+    }
+
+    @Override
+    public Response fetchLatestResponse() {
+        return latestResponse.get();
+    }
+
+    public static JSONObject getLatestResponseBodyAsJsonObject() {
+        return new JSONObject(latestResponse.get().getBody().asString());
+    }
+
+    public static String getCurrentClientId() {
+        return String.valueOf(client.get().getId());
+    }
+
+    public static Client getCurrentClient() {
+        return client.get();
+    }
+
     public static void clearThreadContext() {
         faker.remove();
         client.remove();
         address.remove();
         deletionSuccessful.remove();
+        latestResponse.remove();
     }
 }
