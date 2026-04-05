@@ -1,9 +1,37 @@
+# IDEs and Editors
 .idea/
 *.iml
+*.iws
+.vscode/
+.classpath
+.project
+.settings/
+.vscode/
+
+# Build and Output
+/target/
 out/
-target/
+build/
+bin/
+*.class
+
+# Dependencies
 server/node_modules/
+/node_modules/
+
+# Environment and Secrets
 .env*
 !.env.example
+
+# OS and Cache
 .DS_Store
 Thumbs.db
+*.swp
+.AppleDouble
+
+# QA/Test Reports
+/test-output/
+/allure-results/
+/allure-report/
+cucumber-reports/
+*.log
